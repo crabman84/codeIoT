@@ -20,8 +20,8 @@ Servo myservo;  // create servo object to control a servo
 
 //----------END: Servor Library and initialsation ----------//
 // (temp, humidity, Servo Pos)
-static float data[3] = {0, 0, 0};
-
+static float data[3] = {
+    0, 0, 0};
 
 void setup() {
     dht.begin();
@@ -38,12 +38,15 @@ void loop() {
     //  float data2 = {1, 2};
     //    DHT_write(data);
     Serial.print(data[0]);
-    servo_pos_sweep();
+
+    float latestPos;
+    latestPos = calculatePosFromTemp(data);
+     servoSetPosition(latestPos);
+    //servo_pos_sweep();
     //  delay(500);
 }
 
 float* DHT_read(){
-
     // Reading temperature or humidity takes about 250 milliseconds!
     float t = dht.readTemperature();
     float h = dht.readHumidity();
@@ -74,29 +77,55 @@ void DHT_write(float * data){
 
 void servoSetPosition(float pPos){
     data[2] = pPos;
+    //Serial.println(data[2]);
+    //Serial.println(data[2]);
     myservo.write(pPos); // tell servo to go to position in variable 'pos'
 }
 
+float calculatePosFromTemp(float* data){
+    const int maxPos = 171; //value is in degrees
+    const float maxTemp = 50; // value is in Celcius
+    const float conversionVal = maxPos/maxTemp;
+    float currentTemp = data[0];
+
+    float nextPos;
+    if(currentTemp > 25){
+        nextPos = 171;
+        Serial.println("\n It is TOO HOT! Make it COLD again!");
+    }
+    else if(currentTemp < 19){
+        nextPos = 0;
+        Serial.println("\n It is TOO COLD! Make it HOT again!");
+    }
+    else{
+        nextPos = currentTemp * conversionVal;
+        Serial.println("\n This is nice...");
+    }
+    //printData("Next Pos: |", nextPos, "°|");
+
+    return nextPos;
+}
 
 void servo_pos_sweep(){
     float pos = 0;    // variable to store the servo position
-    int speedRateLimiter = 6;
+    int speedRateLimiter = 12;
     int motorPause = 100;
     for (pos = 0; pos <= 171; pos += 1) { // goes from 0 degrees to 180 degrees
-      // in steps of 1 degree
-      //printData("Pos: ", pos, "°");
-      printf(" \n");
-      myservo.write(pos); // tell servo to go to position in variable 'pos'
-      servoSetPosition(pPos);
-      delay(speedRateLimiter);                       // waits 15ms for the servo to reach the position
+        // in steps of 1 degree
+        //printData("Pos: ", pos, "°");
+        printf(" \n");
+        //myservo.write(pos); // tell servo to go to position in variable 'pos'
+        servoSetPosition(pos);
+        delay(speedRateLimiter);                       // waits 15ms for the servo to reach the position
     }
-    
+
     //delay(motorPause);
     for (pos = 172; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-      //printData("Pos: ", pos, "°");
-      printf(" \n");
-      myservo.write(pos);              // tell servo to go to position in variable 'pos'
-      delay(speedRateLimiter);                       // waits 15ms for the servo to reach the position
+        //printData("Pos: ", pos, "°");
+        printf(" \n");
+        //myservo.write(pos);              // tell servo to go to position in variable 'pos'
+        servoSetPosition(pos);
+        delay(speedRateLimiter);                       // waits 15ms for the servo to reach the position
     }
 }
 
@@ -137,6 +166,8 @@ void printData(String pName, char pData, String pScale){
     Serial.print(pScale);
 }
 //-----------EDN: Overloaded functions-----------//
+
+
 
 
 
