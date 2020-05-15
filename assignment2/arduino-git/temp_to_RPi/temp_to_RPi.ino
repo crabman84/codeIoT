@@ -36,10 +36,10 @@ void loop() {
 
     float* data = DHT_read();
     float latestPos;
-    latestPos = calculatePosFromTemp(data);    
-    data[2] = latestPos;
+    //latestPos = calculatePosFromTemp(data);    
+    //data[2] = latestPos;
     
-    servoSetPosition(latestPos);
+    //servoSetPosition(latestPos);
     //  float data2 = {1, 2};
     //    DHT_write(data);
     String indicator;
@@ -91,6 +91,10 @@ void DHT_write(float * data){
 
 }
 
+
+
+
+//-------Old Code-------
 void servoSetPosition(float pPos){
     data[2] = pPos;
     //Serial.println(data[2]);

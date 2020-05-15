@@ -1,5 +1,5 @@
 import serial
-from dc_motor import *
+#from dc_motor import *
 
 device = '/dev/ttyACM0'
 arduino = serial.Serial(device, 9600)
@@ -22,6 +22,7 @@ def readSerialData():
     #         print('test 1st if in while loop')
             dataTemp = arduino.readline()
             temp = dataTemp.decode('UTF-8')
+            tempInt = temp.strip()
             i = i + 1
         elif(indicator == "index"):
             dataHeatIndex = arduino.readline()
@@ -32,24 +33,22 @@ def readSerialData():
             motorPos = dataMotorPos.decode('UTF-8')
             i = i + 1
 
-    print('Encoded Serial Temp: '+ temp)
+    print('Encoded Serial Temp: ' + str(temp))
     print('Encoded Serial Heat Index: '+ hIndex)
     print('Encoded Serial Motor Position: '+ motorPos)
 
     
     isHot = checkTemp(temp, isHot)
-    
     return temp, isHot, motorPos
 
     
 #################################
 
 def checkTemp(pTemp, pIsHot):
-    if(float(pTemp)>25):
+    if(float(pTemp)>20):
         pIsHot = True
-        motorON()
+        #motorON()
     elif(float(pTemp)<20):
         pIsHot = False
-        motorOFF()
-        
+       # motorOFF()    
     return pIsHot    
