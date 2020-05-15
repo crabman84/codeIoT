@@ -35,15 +35,31 @@ void loop() {
     // Serial.println("Hello tello!"); 
 
     float* data = DHT_read();
+    float latestPos;
+    latestPos = calculatePosFromTemp(data);    
+    data[2] = latestPos;
+    
+    servoSetPosition(latestPos);
     //  float data2 = {1, 2};
     //    DHT_write(data);
-    Serial.print(data[0]);
-
-    float latestPos;
-    latestPos = calculatePosFromTemp(data);
-     servoSetPosition(latestPos);
+    String indicator;
+    for(int i=0;i<3;i++){
+        if(i==0){
+            indicator = "temp";
+        }
+        else if(i==1){
+            indicator = "index";
+        }
+        else if(i==2){
+            indicator = "pos";
+        }
+        Serial.println(indicator);
+        delay(600);
+        Serial.println(data[i]);
+    }
+     
     //servo_pos_sweep();
-    //  delay(500);
+    delay(500);
 }
 
 float* DHT_read(){
@@ -91,18 +107,18 @@ float calculatePosFromTemp(float* data){
     float nextPos;
     if(currentTemp > 25){
         nextPos = 171;
-        Serial.println("\n It is TOO HOT! Make it COLD again!");
+//        Serial.println("\n It is TOO HOT! Make it COLD again!");
     }
-    else if(currentTemp < 19){
+    else if(currentTemp < 17.5){
         nextPos = 0;
-        Serial.println("\n It is TOO COLD! Make it HOT again!");
+//        Serial.println("\n It is TOO COLD! Make it HOT again!");
     }
     else{
         nextPos = currentTemp * conversionVal;
-        Serial.println("\n This is nice...");
+//        Serial.println("\n This is nice...");
     }
     //printData("Next Pos: |", nextPos, "°|");
-
+    //data[2] = nextPos;
     return nextPos;
 }
 

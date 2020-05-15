@@ -1,8 +1,9 @@
 import serial
 import io
 import MySQLdb
+from dc_motor import *
 
-device = '/dev/ttyACM1'
+device = '/dev/ttyACM0'
 #ser = serial.Serial('/dev/ttyACM1', 9600)
 
 
@@ -13,6 +14,7 @@ arduino = serial.Serial(device, 9600)
 temp = 5
 motorPos = 50
 hIndex = 4
+isHot = False
 
 i = 0
 while(i<3):
@@ -39,6 +41,13 @@ print('Encoded Serial Temp: '+ temp)
 print('Encoded Serial Heat Index: '+ hIndex)
 print('Encoded Serial Motor Position: '+ motorPos)
 
+if(float(temp)>25):
+    isHot = True
+    motorON()
+elif(float(temp)<20):
+    isHot = False
+    motorOFF()
+
 
 
 #Make DB connection
@@ -50,7 +59,7 @@ print(dbConn)
 #with dbConn:
 try: 
     cursor = dbConn.cursor()
-    #cursor.execute("INSERT INTO tempLog (Temperature) VALUES (%s)" % (temp))
+    #cursor.execute("INSERT INTO motorTempLog (temp,pos,isHot) VALUES (%s, %s, %s)" % (temp, motorPos, isHot))
 except (MySQLdb.Error) as e:
     print(e)
     dbConn.rollback()

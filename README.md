@@ -4,7 +4,9 @@ To Dos:
 - Send full array of data to rPi 
 - make sure power supply is stable
 	- maybe add a capacitor in parralel with  motor?
-
+- Add motor for Fan
+- Add CO2 Sensor?
+- 
 
 Problems with code and hardware:
 - 'with dbConn:' is Deprecated 
